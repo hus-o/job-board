@@ -53,17 +53,25 @@ export default function CheckoutForm() {
 
     if (!error){
       const {id} = paymentMethod
-      console.log(paymentMethod)
-
       try {
-        const data = axios.post("/api/form-handler", {id, amount: 15000})
+        const data = axios.post("/api/form-handler", {
+          id,
+          companyName,
+          companySite,
+          isAddTimeChecked,
+          isFeatureMonthChecked
+        })
+        .then(response => {
+          console.log("this is the after")
+          console.log(response)
+        })
       } catch (error) {
         console.log(error)
       }
     }
   }
   
-  
+  console.log("re render")
   return(
     
     <form onSubmit={handleSubmit}>
