@@ -1,49 +1,35 @@
-import Stripe from "stripe";
-import { parseCookies, setCookie } from "nookies";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import {useRouter} from "next/router"
+import axios from "axios"
 
-import CheckoutForm from "../../components/CheckoutForm";
-
-const stripePromise = loadStripe("pk_test_51HqJzLB1kCUVWOv5NvFducmjKHpzkKegTb8lbtIBkBhUV4wnBxpq9gaCscRFX9mfpCaA33WVsAn8StOwVw3BkrQG00e6iBGzkW"); // might wanna move this to wrap whole app, once everything works
-
-// serverside function
-export const getServerSideProps = async context => {
-  const stripe = new Stripe(process.env.STRIPE_KEY);
-
-  let paymentIntent;
-
-  const { paymentIntentId } = await parseCookies(context);
-
-  if (paymentIntentId) {
-    paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-    return {
-      props: {
-        paymentIntent
-      }
-    };
+export default function PickJob() {
+  const { register, handleSubmit, errors } = useForm();
+  const router = useRouter()
+  const onSubmit = async formData => {
+    let querystring = []
+    for (const addOn in formData){
+        if (formData[addOn] == true){
+          querystring.push(addOn)
+        }
+    }
+    router.push({
+        pathname: "/post-job/checkout",
+        query: querystring
+    })
+      
+      
   }
 
-  paymentIntent = await stripe.paymentIntents.create({
-    amount: 1000,
-    currency: "gbp"
-  });
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input type="checkbox" placeholder="Logo" name="Logo" ref={register} />
+      <input type="checkbox" placeholder="featureWeek" name="featureWeek" ref={register} />
+      <input type="checkbox" placeholder="featureMonth" name="featureMonth" ref={register} />
+      <input type="checkbox" placeholder="extraTime" name="extraTime" ref={register} />
 
-  setCookie(context, "paymentIntentId", paymentIntent.id);
-
-  return {
-    props: {
-      paymentIntent
-    }
-  };
-};
-
-// this page, passing down the payment intent to the checkoutform component
-const CheckoutPage = ({ paymentIntent }) => (
-  <Elements stripe={stripePromise}>
-    <CheckoutForm intent={paymentIntent} />
-  </Elements>
-);
-
-export default CheckoutPage;
+      <input type="submit" />
+    </form>
+  );
+}
