@@ -31,8 +31,8 @@ export default function Header (props){
       w="100%"
       mb={8}
       p={8}
-      bg={["blue", "blue", "grey", "grey"]} // set colours of bg and text from base (mobile) upwards
-      color={["black", "black", "primary.700", "primary.700"]}
+      bg={["#faf8e5", "#faf8e5", "#faf8e5", "#faf8e5"]} // set colours of bg and text from base (mobile) upwards
+      color={["#2c2c2e", "#2c2c2e", "#2c2c2e", "#2c2c2e"]}
       {...props}
     >
       <Flex align="center">
@@ -50,7 +50,7 @@ export default function Header (props){
         <Flex
           align={["center", "center", "center", "center"]}
           justify={["center", "space-between", "flex-end", "flex-end"]}
-          direction={["column", "column", "row", "row"]}
+          direction={["column", "row", "row", "row"]}
           pt={[4, 4, 0, 0]}
         >
             <MenuItems href="/jobs">All Jobs</MenuItems>
@@ -58,8 +58,24 @@ export default function Header (props){
             <MenuItems href="/about">About</MenuItems>
             <MenuItems href="/contact">Contact Us</MenuItems>
             <MenuItems href="/login">Login</MenuItems>
-            <MenuItems href="/signup">Sign Up</MenuItems>
-            
+            <MenuItems href="/signup" isLast>
+            <Button
+              size="sm"
+              rounded="md"
+              color={["black", "black", "black", "black"]}
+              bg={["#E5E7FA", "#E5E7FA", "#E5E7FA", "#E5E7FA"]}
+              _hover={{
+                bg: [
+                  "#8e97e9",
+                  "#8e97e9",
+                  "#8e97e9",
+                  "#8e97e9",
+                ],
+              }}
+            >
+              Sign Up
+            </Button>
+            </MenuItems>
         </Flex>
       </Box>
     </Flex>
