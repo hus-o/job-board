@@ -7,7 +7,6 @@ const CheckoutForm = ({ intent }) => {
   const elements = useElements();
   const [checkoutError, setCheckoutError] = useState(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
-  // console.log(intent)
   const handleSubmit = async e => {
     e.preventDefault();
     try{
