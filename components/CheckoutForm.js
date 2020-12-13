@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { destroyCookie } from "nookies";
 
-const CheckoutForm = ({ intent }) => {
+const CheckoutForm = ({ intent, amount }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [checkoutError, setCheckoutError] = useState(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  console.log(`id: ${intent.id} & amount ${intent.amount}`)
   const handleSubmit = async e => {
     e.preventDefault();
     try{
@@ -34,13 +35,14 @@ const CheckoutForm = ({ intent }) => {
 
   
   if (checkoutSuccess) return <p>Payment successfull!</p>;
-
+  // should I add a "start over" button to delete the cookie and restart, so if ppl go back and forth in browser
+  // nothing changes. OR just maxAge cookie / no cookie
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}> 
       <CardElement />
 
       <button type="submit" disabled={!stripe}>
-        Pay now
+        Pay  £{intent.amount / 100}
       </button>
 
       {checkoutError && <span style={{ color: "red" }}>{checkoutError}</span>}

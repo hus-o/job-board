@@ -1,8 +1,8 @@
 import { useState } from "react"
 import Link from "next/link"
-import { Box, Flex, Text, Button} from "@chakra-ui/react"
+import { Box, Flex, Text, Button, useColorMode} from "@chakra-ui/react"
  
-import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons"
+import { CloseIcon, HamburgerIcon, SunIcon, MoonIcon} from "@chakra-ui/icons"
  
 const MenuItems = (props) => {
   const { children, isLast, href = "/", ...rest } = props
@@ -21,7 +21,8 @@ const MenuItems = (props) => {
 export default function Header (props){
   const [show, setShow] = useState(false)
   const toggleMenu = () => setShow(!show)
- 
+  const {colorMode, toggleColorMode} = useColorMode()
+
   return (
     <Flex
       as="nav"
