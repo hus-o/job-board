@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import { useForm } from 'react-hook-form';
 import {useRouter} from "next/router"
-import {Button, Flex, Box, Text, Progress} from "@chakra-ui/react"
+import {Button, Flex, Box, Text} from "@chakra-ui/react"
 
 export default function PickJob() {
   const { register, handleSubmit, errors, watch } = useForm();

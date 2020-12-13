@@ -58,11 +58,7 @@ export const getServerSideProps = async context => {
     currency: "gbp"
     });
 
-  setCookie(context, "paymentIntentId", paymentIntent.id, 
-  // {
-  //   maxAge: 300 // seconds. Should we be setting cookie? How long for?
-  // }
-  );
+  setCookie(context, "paymentIntentId", paymentIntent.id);
 
   return {
     props: {
@@ -72,7 +68,7 @@ export const getServerSideProps = async context => {
 };
 
 // this page, passing down the payment intent to the checkoutform component
-const CheckoutPage = ({ paymentIntent }) => ( // somehow pass amount down from the serverside
+const CheckoutPage = ({ paymentIntent }) => (
   <Elements stripe={stripePromise}>
     <CheckoutForm intent={paymentIntent} />
   </Elements>
