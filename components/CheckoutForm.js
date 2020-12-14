@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { destroyCookie } from "nookies";
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import {Button, Alert, AlertIcon, 
         FormControl, FormLabel, Box, Flex,
         Input, InputGroup, InputLeftElement,
-        Select, NumberInputField, NumberInput} from "@chakra-ui/react"
+        Select, NumberInputField, NumberInput, FormHelperText} from "@chakra-ui/react"
 
 const CheckoutForm = ({ intent }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { register, handleSubmit, errors} = useForm();
+  const { register, handleSubmit, errors, watch, control, reset} = useForm();
   const [checkoutError, setCheckoutError] = useState(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [loading, setLoading] = useState(false)
   const [isPayEnabled, setIsPayEnabled] = useState(false)
   const [salaryType, setSalaryType] = useState("singleSalary")
   console.log(`id: ${intent.id} & amount ${intent.amount}`)
-
+  
   const onSubmit = async data => {
     console.log(data)
     setLoading(true)
@@ -49,29 +49,46 @@ const CheckoutForm = ({ intent }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      
-      
-      <FormControl>
-        <Select onChange={(e) => setSalaryType(e.target.value)}>
-          <option value="singleSalary">Single Salary</option>
+      <FormControl isRequired>
+        <FormLabel htmlFor="companyName">Company Name</FormLabel>
+        <Input placeholder="e.g. Google" name="companyName" ref={register({required:true})}/>
+        <FormLabel htmlFor="salaryType">Salary</FormLabel>
+        <Select name="salaryType" onChange={(e) => setSalaryType(e.target.value)}>
+          <option defaultValue="singleSalary">Single Salary</option>
           <option value="rangeSalary">Salary Range</option>
         </Select>
         {salaryType == "singleSalary" ?
+        <Controller
+        as={
        <NumberInput>
-         <NumberInputField placeholder="e.g 30,000" name="salary" ref={register({required: true})}></NumberInputField>
-       </NumberInput>
+         <NumberInputField placeholder="e.g. 30,000"></NumberInputField>
+       </NumberInput>}
+               control={control}
+               name="salary"
+               defaultValue=""
+       />
        :
        <Flex>
-          <NumberInput width={500} mr={2}>
-            <NumberInputField placeholder="e.g 20,000" name="salaryMin" ref={register({required: true})}></NumberInputField>
-          </NumberInput>
+         <Controller
+          as= {<NumberInput width={500} mr={2}>
+            <NumberInputField placeholder="e.g 20,000"></NumberInputField>
+          </NumberInput>}
+          control={control}
+          name="salaryMin"
+          defaultValue=""
+          />
           to
-          <NumberInput width={500} ml={2}>
-            <NumberInputField placeholder="e.g 30,000" name="salaryMax" ref={register({required: true})}></NumberInputField>
-          </NumberInput>
+          <Controller
+          as={<NumberInput width={500} ml={2}>
+            <NumberInputField placeholder="e.g 30,000"></NumberInputField>
+          </NumberInput>}
+          control={control}
+          name="salaryMax"
+          defaultValue=""
+          />
        </Flex>}
+       <FormHelperText>Pick whether the job has a specific salary or an undecided range</FormHelperText>
       </FormControl>
-
 
       <CardElement />
       {checkoutError && <span><Alert status="error"><AlertIcon />{checkoutError}</Alert></span>}
@@ -82,7 +99,6 @@ const CheckoutForm = ({ intent }) => {
     
     </form>
 
-  );
-};
-
+);
+        }
 export default CheckoutForm;
