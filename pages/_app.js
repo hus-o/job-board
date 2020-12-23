@@ -8,8 +8,7 @@ const theme = extendTheme({
       body: {
     bg:  "#f8f8f8" // #f8f8f8 #faf8e5?
   }
-  }
-}
+  }}
 })
 
 function MyApp({ Component, pageProps }) {

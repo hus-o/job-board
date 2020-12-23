@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { destroyCookie } from "nookies";
 import { useForm, Controller } from 'react-hook-form';
-import MultiSelect from "react-multi-select-component"
 import {Button, Alert, AlertIcon, 
         FormControl, FormLabel, Box, Flex,
         Input, Checkbox,
@@ -17,7 +16,6 @@ const CheckoutForm = ({ intent }) => {
   const [loading, setLoading] = useState(false)
   const [isPayEnabled, setIsPayEnabled] = useState(false)
   const [salaryType, setSalaryType] = useState("singleSalary")
-  const [selected, setSelected] = useState([]);
   console.log(`id: ${intent.id} & amount ${intent.amount}`)
   
   const onSubmit = async data => {
@@ -367,7 +365,7 @@ const CheckoutForm = ({ intent }) => {
         </Select>
        <FormHelperText>Pick whether the job has a specific salary or an undecided range</FormHelperText>
        <FormLabel htmlFor="jobSector">Job Sector</FormLabel>
-       <Select name="jobSector" if="jobSector">
+       <Select name="jobSector" ref={register}>
           <option value="Design">Design</option>
           <option value="Product">Product</option>
           <option value="Marketing">Marketing</option>
@@ -376,22 +374,13 @@ const CheckoutForm = ({ intent }) => {
        </Select>
        <FormHelperText>What team in the company is the job for?</FormHelperText>
        <FormLabel htmlFor="contractType">Contract Type</FormLabel>
-       <Controller
-        control={control}
-        name="contractType"
-        render={(props)  => (
-          <MultiSelect
-          hasSelectAll={false}
-          options={
-            [{label:"Full Time", value:"fullTime"},
-            {label:"Permanent",value:"permanent"}]
-          }
-          onChange={(e) => props.onChange(e)}
-          value={props.value}
-          />
-        )}
-        defaultValue=""
-        />
+       <Select name="contractType" id="contractType" ref={register}>
+         <option value="Full-Time">Full-Time</option>
+         <option value="Part-Time">Part-Time</option>
+         <option value="Contract">Contract</option>
+         <option value="Freelance">Freelance</option>
+         <option value="Fixed-Term">Fixed-Term</option>
+       </Select>
        <FormHelperText>What type of contract is this job? You can select as many as apply</FormHelperText>
       </FormControl>
 
