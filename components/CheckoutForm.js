@@ -36,8 +36,13 @@ const CheckoutForm = ({ intent }) => {
 
   console.log(`id: ${intent.id} & amount ${intent.amount}`)
 
+  const watchUpload = watch("uploadLogo",[])
+
+  console.log(watchUpload)
+
   const getLogo = () =>{
     setClearbitLogo(clearbitRef.current.value)
+    reset(watchUpload)
   }
 
   const onSubmit = async data => {
@@ -82,14 +87,18 @@ const CheckoutForm = ({ intent }) => {
         <>
         <FormControl pl={[2,2,5,5]} pr={[2,2,5,5]}>
         <FormLabel htmlFor="logoSearch">Logo</FormLabel>
-        <Flex direction={["column","column","row","row"]} justify="space-between" align="center">
+        <Flex mb={2} justify="center">
+        <Image boxSize="100px" name="logoImage" src={watchUpload.length ? URL.createObjectURL(watchUpload[0]) : `//logo.clearbit.com/${clearbitLogo}`} />
+        
+        </Flex>
+        <Flex direction={["column","column","row","row"]}  justify="space-between" align="center">
         <Input placeholder="e.g. google.com" name="logoSearch" id="logoSearch" ref={clearbitRef}/>
-        <Flex align="center">
+        <Flex align="center" mt={[2,2,0,0]}>
         <Button ml={2} onClick={(e) => getLogo()}>Search</Button>
-        <Input ml={5} variant="unstyled" type="file" id="uploadLogo" name="uploadLogo" accept="image/png, image/jpeg" ref={register}/>
+        <label className="chakra-button css-1mhenfc" htmlFor={"uploadLogo"}>Choose File</label>
+        <Input hidden={true} ml={5} variant="unstyled" type="file" id="uploadLogo" name="uploadLogo" accept="image/png, image/jpeg" ref={register}/>
         </Flex>
         </Flex>
-        <Image name="logoImage" src={`//logo.clearbit.com/${clearbitLogo}`} />
         <FormHelperText>We can automatically grab your logo, if that doesn't work just upload (max 500kb)</FormHelperText>
         </FormControl>
         </>
