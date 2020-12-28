@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { destroyCookie } from "nookies";
 import { useForm, Controller } from 'react-hook-form';
+import {useRouter} from "next/router"
 import {Button, Alert, AlertIcon, 
         FormControl, FormLabel, Box, Flex,
-        Input, Checkbox,
+        Input, Checkbox, Image,
         Select, NumberInputField, NumberInput, FormHelperText} from "@chakra-ui/react"
+import { useQuill } from 'react-quilljs';
+import 'quill/dist/quill.snow.css'; // Add css for snow theme
 
 const CheckoutForm = ({ intent }) => {
+  const modules = {
+    toolbar: [
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      ["link"]
+    ],
+  };
+  const placeholder = 'Add everything regarding job description, role, benefits here';
+  const { quill, quillRef } = useQuill({ modules, placeholder });
   const stripe = useStripe();
   const elements = useElements();
   const { register, handleSubmit, errors, watch, control, reset} = useForm();
@@ -16,11 +30,22 @@ const CheckoutForm = ({ intent }) => {
   const [loading, setLoading] = useState(false)
   const [isPayEnabled, setIsPayEnabled] = useState(false)
   const [salaryType, setSalaryType] = useState("singleSalary")
+  const [clearbitLogo, setClearbitLogo] = useState(null)
+  const clearbitRef = useRef(null)
+  const router = useRouter()
+
   console.log(`id: ${intent.id} & amount ${intent.amount}`)
-  
+
+  const getLogo = () =>{
+    setClearbitLogo(clearbitRef.current.value)
+  }
+
   const onSubmit = async data => {
-    console.log(data)
     setLoading(true)
+    // const delta = quill.getContents()
+    const jobDescHTML = quill.root.innerHTML;
+    data["jobDesc"] = jobDescHTML
+    console.log(data)
     try{
       const {paymentIntent, error} = await stripe.confirmCardPayment(intent.client_secret, {
         payment_method: {
@@ -48,11 +73,29 @@ const CheckoutForm = ({ intent }) => {
   if (checkoutSuccess) return <p>Payment successfull!</p>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form width="50%" onSubmit={handleSubmit(onSubmit)}>
       <FormControl isRequired pl={[2,2,5,5]} pr={[2,2,5,5]}>
         <FormLabel htmlFor="companyName">Company Name</FormLabel>
         <Input placeholder="e.g. Google" name="companyName" id="companyName" ref={register}/>
-        
+      </FormControl>
+        {router.query[0] == "addLogo" ?
+        <>
+        <FormControl pl={[2,2,5,5]} pr={[2,2,5,5]}>
+        <FormLabel htmlFor="logoSearch">Logo</FormLabel>
+        <Flex direction={["column","column","row","row"]} justify="space-between" align="center">
+        <Input placeholder="e.g. google.com" name="logoSearch" id="logoSearch" ref={clearbitRef}/>
+        <Flex align="center">
+        <Button ml={2} onClick={(e) => getLogo()}>Search</Button>
+        <Input ml={5} variant="unstyled" type="file" id="uploadLogo" name="uploadLogo" accept="image/png, image/jpeg" ref={register}/>
+        </Flex>
+        </Flex>
+        <Image name="logoImage" src={`//logo.clearbit.com/${clearbitLogo}`} />
+        <FormHelperText>We can automatically grab your logo, if that doesn't work just upload (max 500kb)</FormHelperText>
+        </FormControl>
+        </>
+        : 
+        null}
+        <FormControl isRequired pl={[2,2,5,5]} pr={[2,2,5,5]}>
         <FormLabel htmlFor="country">Country</FormLabel>
         <Select name="country" id="country" ref={register}>
           <option value="Remote">Remote</option>
@@ -305,7 +348,7 @@ const CheckoutForm = ({ intent }) => {
           <option value="Zimbabwe">Zimbabwe</option>
         </Select>
         <FormHelperText>What country is the job based in</FormHelperText>
-        
+
         <FormLabel>Location</FormLabel>
         <Input placeholder="e.g. London" name="location" ref={register}></Input>
         <Checkbox name="isRemote" ref={register}>Remote?</Checkbox>
@@ -323,6 +366,7 @@ const CheckoutForm = ({ intent }) => {
         </Select>
 
         <FormLabel htmlFor="salaryType">Salary</FormLabel>
+        <Flex>
         <Select name="salaryType" onChange={(e) => setSalaryType(e.target.value)}>
           <option defaultValue="singleSalary">Single Salary</option>
           <option value="rangeSalary">Salary Range</option>
@@ -357,6 +401,7 @@ const CheckoutForm = ({ intent }) => {
           defaultValue=""
           />
        </Flex>}
+       </Flex>
        <Select name="salaryRate" ref={register}>
             <option value="Annual">Annual</option>
             <option value="Monthly">Monthly</option>
@@ -382,6 +427,9 @@ const CheckoutForm = ({ intent }) => {
          <option value="Fixed-Term">Fixed-Term</option>
        </Select>
        <FormHelperText>What type of contract is this job? You can select as many as apply</FormHelperText>
+
+       <FormLabel htmlFor="jobDesc">Job Details</FormLabel>
+       <Box ref={quillRef} />
       </FormControl>
 
       <CardElement />
