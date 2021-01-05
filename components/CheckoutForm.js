@@ -30,6 +30,7 @@ const CheckoutForm = ({ intent }) => {
   const [loading, setLoading] = useState(false)
   const [isPayEnabled, setIsPayEnabled] = useState(false)
   const [salaryType, setSalaryType] = useState("singleSalary")
+  const [applicationType, setApplicationType] = useState("applyLink")
   const [clearbitLogo, setClearbitLogo] = useState(null)
   const clearbitRef = useRef(null)
   const router = useRouter()
@@ -38,12 +39,11 @@ const CheckoutForm = ({ intent }) => {
 
   const watchUpload = watch("uploadLogo",[])
 
-  console.log(watchUpload)
-
   const getLogo = () =>{
     setClearbitLogo(clearbitRef.current.value)
     reset(watchUpload)
   }
+
 
   const onSubmit = async data => {
     setLoading(true)
@@ -78,28 +78,31 @@ const CheckoutForm = ({ intent }) => {
   if (checkoutSuccess) return <p>Payment successfull!</p>;
 
   return (
-    <form width="50%" onSubmit={handleSubmit(onSubmit)}>
+    <Box m={"auto"} width={["90%","90%","60%","60%"]}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl isRequired pl={[2,2,5,5]} pr={[2,2,5,5]}>
         <FormLabel htmlFor="companyName">Company Name</FormLabel>
-        <Input placeholder="e.g. Google" name="companyName" id="companyName" ref={register}/>
+        <Input mb={2} placeholder="e.g. Google" name="companyName" id="companyName" ref={register}/>
       </FormControl>
+
         {router.query[0] == "addLogo" ?
         <>
         <FormControl pl={[2,2,5,5]} pr={[2,2,5,5]}>
         <FormLabel htmlFor="logoSearch">Logo</FormLabel>
         <Flex mb={2} justify="center">
         <Image boxSize="100px" name="logoImage" src={watchUpload.length ? URL.createObjectURL(watchUpload[0]) : `//logo.clearbit.com/${clearbitLogo}`} />
-        
         </Flex>
+
         <Flex direction={["column","column","row","row"]}  justify="space-between" align="center">
         <Input placeholder="e.g. google.com" name="logoSearch" id="logoSearch" ref={clearbitRef}/>
+
         <Flex align="center" mt={[2,2,0,0]}>
-        <Button ml={2} onClick={(e) => getLogo()}>Search</Button>
-        <label className="chakra-button css-1mhenfc" htmlFor={"uploadLogo"}>Choose File</label>
+        <Button ml={2} onClick={(e) => getLogo()}>Find Logo</Button>
+        <label className="chakra-button css-1mhenfc" htmlFor="uploadLogo">Choose File</label>
         <Input hidden={true} ml={5} variant="unstyled" type="file" id="uploadLogo" name="uploadLogo" accept="image/png, image/jpeg" ref={register}/>
         </Flex>
         </Flex>
-        <FormHelperText>We can automatically grab your logo, if that doesn't work just upload (max 500kb)</FormHelperText>
+        <FormHelperText mb={2}>We can automatically grab your logo, if that doesn't work just upload (max 500kb)</FormHelperText>
         </FormControl>
         </>
         : 
@@ -356,34 +359,35 @@ const CheckoutForm = ({ intent }) => {
           <option value="Zambia">Zambia</option>
           <option value="Zimbabwe">Zimbabwe</option>
         </Select>
-        <FormHelperText>What country is the job based in</FormHelperText>
+        <FormHelperText mb={2}>What country is the job based in - pick remote if fully remote</FormHelperText>
 
         <FormLabel>Location</FormLabel>
         <Input placeholder="e.g. London" name="location" ref={register}></Input>
         <Checkbox name="isRemote" ref={register}>Remote?</Checkbox>
-        <FormHelperText>What city is the job based in, and is it possible to do remotely?</FormHelperText>
+        <FormHelperText mb={2}>What city is the job based in, and is it possible to do remotely?</FormHelperText>
 
         <FormLabel htmlFor="roleName">Role Title</FormLabel>
-        <Input placeholder="e.g. Junior Marketer" name="roleName" id="roleName" ref={register}/>
+        <Input mb={2} placeholder="e.g. Junior Marketer" name="roleName" id="roleName" ref={register}/>
 
         <FormLabel htmlFor="jobLevel">Job Level</FormLabel>
-        <Select name="jobLevel" id="jobLevel" ref={register}>
+        <Select mb={2} name="jobLevel" id="jobLevel" ref={register}>
         <option value="Apprenticeship">Apprenticeship</option>
           <option value="Internship">Internship</option>
+          <option value="Graduate">Graduate</option>
           <option value="Entry">Entry</option>
           <option value="Junior">Junior</option>
         </Select>
-
         <FormLabel htmlFor="salaryType">Salary</FormLabel>
-        <Flex>
+        <Flex mb={2}>
         <Select name="salaryType" onChange={(e) => setSalaryType(e.target.value)}>
-          <option defaultValue="singleSalary">Single Salary</option>
+          <option value="singleSalary">Single Salary</option>
           <option value="rangeSalary">Salary Range</option>
         </Select>
+        </Flex>
         {salaryType == "singleSalary" ?
         <Controller
         as={
-       <NumberInput>
+       <NumberInput mb={2}>
          <NumberInputField placeholder="e.g. 30,000"></NumberInputField>
        </NumberInput>}
                control={control}
@@ -391,33 +395,34 @@ const CheckoutForm = ({ intent }) => {
                defaultValue=""
        />
        :
-       <Flex>
-         <Controller
-          as= {<NumberInput width={500} mr={2}>
-            <NumberInputField placeholder="e.g 20,000"></NumberInputField>
-          </NumberInput>}
-          control={control}
-          name="salaryMin"
-          defaultValue=""
-          />
-          -
-          <Controller
-          as={<NumberInput width={500} ml={2}>
-            <NumberInputField placeholder="e.g 30,000"></NumberInputField>
-          </NumberInput>}
-          control={control}
-          name="salaryMax"
-          defaultValue=""
-          />
-       </Flex>}
+       <Flex mb={2}>
+       <Controller
+       as= {<NumberInput width={500} mr={2}>
+         <NumberInputField placeholder="e.g 20,000"></NumberInputField>
+       </NumberInput>}
+       control={control}
+       name="salaryMin"
+       defaultValue=""
+       />
+       to
+       <Controller
+       as={<NumberInput width={500} ml={2}>
+         <NumberInputField placeholder="e.g 30,000"></NumberInputField>
+       </NumberInput>}
+       control={control}
+       name="salaryMax"
+       defaultValue=""
+       />
        </Flex>
-       <Select name="salaryRate" ref={register}>
-            <option value="Annual">Annual</option>
+       }
+      <Select name="salaryRate" ref={register}>
+            <option value="Annually">Annually</option>
             <option value="Monthly">Monthly</option>
             <option value="Daily">Daily</option>
             <option value="Hourly">Daily</option>
-        </Select>
-       <FormHelperText>Pick whether the job has a specific salary or an undecided range</FormHelperText>
+      </Select>
+      <FormHelperText>Hi</FormHelperText>
+
        <FormLabel htmlFor="jobSector">Job Sector</FormLabel>
        <Select name="jobSector" ref={register}>
           <option value="Design">Design</option>
@@ -426,7 +431,8 @@ const CheckoutForm = ({ intent }) => {
           <option value="Engineering">Engineering</option> 
           {/* TO-DO FINISH LIST */}
        </Select>
-       <FormHelperText>What team in the company is the job for?</FormHelperText>
+       <FormHelperText mb={2}>What team in the company is the job for?</FormHelperText>
+
        <FormLabel htmlFor="contractType">Contract Type</FormLabel>
        <Select name="contractType" id="contractType" ref={register}>
          <option value="Full-Time">Full-Time</option>
@@ -435,20 +441,34 @@ const CheckoutForm = ({ intent }) => {
          <option value="Freelance">Freelance</option>
          <option value="Fixed-Term">Fixed-Term</option>
        </Select>
-       <FormHelperText>What type of contract is this job? You can select as many as apply</FormHelperText>
+       <FormHelperText mb={2}>What type of contract is this job? You can select as many as apply</FormHelperText>
 
        <FormLabel htmlFor="jobDesc">Job Details</FormLabel>
-       <Box ref={quillRef} />
+       <Box mb={2} ref={quillRef} />
+
+       <FormLabel>Application link / email</FormLabel>
+       <Select mb={2} name="applicationType" onChange={(e) => setApplicationType(e.target.value)}>
+          <option value="applyLink">Application Link</option>
+          <option value="applyEmail">Email Application</option>
+        </Select>
+        {applicationType == "applyLink" ?
+          <Input type="link" name="applyLink" id="applyLink" placeholder="e.g. greenhouse, workable, lever, own site" ref={register}/>
+          :
+          <Input type="email" name="applyEmail" id="applyEmail" placeholder="e.g. HR@company.com" ref={register}/>
+        }
+        <FormHelperText mb={2}>Either enter a link to the application page or an email where candidates can send required </FormHelperText>
       </FormControl>
 
-      <CardElement />
-      {checkoutError && <span><Alert status="error"><AlertIcon />{checkoutError}</Alert></span>}
+      <Flex mt={10} direction={"column"} align={"center"}> 
+        <CardElement />
+        {checkoutError && <span><Alert status="error"><AlertIcon />{checkoutError}</Alert></span>}
 
-      <Button isLoading={loading} type="submit" disabled={!stripe}>
-        Pay  £{intent.amount / 100}
-      </Button>
-    
+        <Button mt={5} isLoading={loading} type="submit" disabled={!stripe}>
+          Pay  £{intent.amount / 100}
+        </Button>
+      </Flex> 
     </form>
+    </Box>
 
 );
         }
