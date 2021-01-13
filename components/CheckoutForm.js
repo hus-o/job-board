@@ -3,6 +3,7 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { destroyCookie } from "nookies";
 import { useForm, Controller } from 'react-hook-form';
 import {useRouter} from "next/router"
+import axios from "axios"
 import {Button, Alert, AlertIcon, 
         FormControl, FormLabel, Box, Flex,
         Input, Checkbox, Image,
@@ -33,6 +34,7 @@ const CheckoutForm = ({ intent }) => {
   const [applicationType, setApplicationType] = useState("applyLink")
   const [clearbitLogo, setClearbitLogo] = useState(null)
   const clearbitRef = useRef(null)
+  const uploadRef = useRef("")
   const router = useRouter()
 
   console.log(`id: ${intent.id} & amount ${intent.amount}`)
@@ -41,7 +43,6 @@ const CheckoutForm = ({ intent }) => {
 
   const getLogo = () =>{
     setClearbitLogo(clearbitRef.current.value)
-    reset(watchUpload)
   }
 
 
@@ -50,7 +51,14 @@ const CheckoutForm = ({ intent }) => {
     // const delta = quill.getContents()
     const jobDescHTML = quill.root.innerHTML;
     data["jobDesc"] = jobDescHTML
-    console.log(data)
+    console.log(data.companyName)
+    const formData = new FormData()
+    for (const [key, value] of Object.entries(data)) {
+      key == "uploadLogo" ? 
+      formData.append(key, value[0])
+      :
+      formData.append(key,value)
+    }
     try{
       const {paymentIntent, error} = await stripe.confirmCardPayment(intent.client_secret, {
         payment_method: {
@@ -64,8 +72,10 @@ const CheckoutForm = ({ intent }) => {
         setCheckoutError(error.message)
       }
       else if (paymentIntent.status == "succeeded"){
-        setLoading(false)
-        destroyCookie(null, "paymentIntentId");
+        const response = await axios.post("/api/add-job",formData)
+        console.log(response)
+        setLoading(false),
+        destroyCookie(null, "paymentIntentId")
         // hit database api to write
         setCheckoutSuccess(true); // wouldn't need this as after db write should get-redirect serverside
       }

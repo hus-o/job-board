@@ -32,7 +32,7 @@ export default function Header (props){
       w="100%"
       mb={8}
       p={8}
-      bg={["#faf8e5", "#faf8e5", "#faf8e5", "#faf8e5"]} // set colours of bg and text from base (mobile) upwards
+      bg={["#faf8e5", "#faf8e5", "#f8f8f8", "#f8f8f8"]} // set colours of bg and text from base (mobile) upwards
       color={["#2c2c2e", "#2c2c2e", "#2c2c2e", "#2c2c2e"]}
       {...props}
     >

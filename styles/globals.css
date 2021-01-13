@@ -11,6 +11,10 @@ input[type="checkbox"]:checked + label::after{
     
 }
 
+.formCenter{
+    margin:auto;
+}
+
 .StripeElement{
     width:50%
 }
