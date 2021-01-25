@@ -31,6 +31,9 @@ export default async function handler(req,res){
     const {uploadLogo} = req.files
     const name = saltedMd5(uploadLogo.name, "Let's-G0-S4Lting")
     const fileName = name + path.extname(uploadLogo.name)
-    await bucket.file(fileName).createWriteStream().end(uploadLogo.data)
+    const file = bucket.file(fileName)
+    file.createWriteStream().end(uploadLogo.data)
+    const publicUrl = `https://storage.googleapis.com/job-board-20348.appspot.com/${fileName}`
+    console.log(publicUrl)
     res.send({status:200,message:"Done"})
 }

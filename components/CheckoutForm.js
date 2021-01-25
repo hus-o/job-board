@@ -48,6 +48,7 @@ const CheckoutForm = ({ intent }) => {
 
   const onSubmit = async data => {
     setLoading(true)
+    setIsPayEnabled(false)
     // const delta = quill.getContents()
     const jobDescHTML = quill.root.innerHTML;
     data["jobDesc"] = jobDescHTML
@@ -68,6 +69,7 @@ const CheckoutForm = ({ intent }) => {
 
       if (error){
         setLoading(false)
+        setIsPayEnabled(true)
         console.log(error)
         setCheckoutError(error.message)
       }
@@ -75,6 +77,7 @@ const CheckoutForm = ({ intent }) => {
         const response = await axios.post("/api/add-job",formData)
         console.log(response)
         setLoading(false),
+        setIsPayEnabled(true),
         destroyCookie(null, "paymentIntentId")
         // hit database api to write
         setCheckoutSuccess(true); // wouldn't need this as after db write should get-redirect serverside
